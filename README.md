@@ -506,4 +506,5 @@ For questions or issues, please create an issue in the repository.
 ---
 
 **Version**: 0.3.1 Beta  
-**Last Updated**: 2024
+**Last Updated**: 2025
+

@@ -1,0 +1,45 @@
+services:
+  # 后端API服务
+  backend:
+    build: .
+    container_name: cbt_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/app/data  # 持久化数据库文件
+    env_file:
+      - .env  # 如果文件不存在会被忽略
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./data/cbt_therapy.db}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - PORT=${PORT:-8000}
+      - DEBUG=${DEBUG:-False}
+    restart: unless-stopped
+    networks:
+      - cbt_network
+
+  # 可选：如果需要MySQL数据库，可以取消注释以下服务
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: cbt_mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+  #     MYSQL_DATABASE: cbt_therapy
+  #     MYSQL_USER: cbt_user
+  #     MYSQL_PASSWORD: cbt_password
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - cbt_network
+  #   restart: unless-stopped
+
+networks:
+  cbt_network:
+    driver: bridge
+
+# volumes:
+#   mysql_data:
+

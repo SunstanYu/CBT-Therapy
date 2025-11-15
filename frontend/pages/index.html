@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT治疗助手 - 你的安全空间</title>
+    <link rel="stylesheet" href="/static/styles/main.css?v=2.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="therapeutic-background">
+        <!-- 柔和的背景插画元素 -->
+        <div class="bg-decoration">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="mountain"></div>
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="therapeutic-header">
+            <h1>🌿 CBT 治疗助手</h1>
+            <p class="subtitle">今天我们一起照顾你的感受</p>
+        </header>
+
+        <div class="chat-container">
+            <div id="chatMessages" class="chat-messages">
+                <!-- 消息将在这里动态添加 -->
+                <div class="welcome-message">
+                    <div class="welcome-icon">🌱</div>
+                    <p>这里是只属于你的安全空间，你可以慢慢说，我们慢慢听。</p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="session-controls">
+                    <button id="startSessionBtn" class="btn btn-therapeutic">🌿 开始今天的对话</button>
+                    <button id="endSessionBtn" class="btn btn-secondary-therapeutic" disabled>结束对话</button>
+                    <span id="sessionStatus" class="status-indicator">未开始</span>
+                </div>
+
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="这里是只属于你的空间…你可以写下任何想说的内容，慢慢来，不用着急" 
+                        rows="3"
+                        disabled
+                    ></textarea>
+                    <button id="sendBtn" type="button" class="btn btn-send" disabled>
+                        <span class="btn-icon">🌿</span>
+                        <span class="btn-text">说给治疗助手听</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="therapeutic-footer">
+            <p>💛 你在这里说的每一句话都会被认真倾听，这是你的安全空间</p>
+        </footer>
+    </div>
+
+    <script src="/static/components/config.js"></script>
+    <script src="/static/components/session_controls.js"></script>
+    <script src="/static/components/chat_window.js"></script>
+    <script>
+        // 确保DOM加载完成后再绑定事件
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+            
+            // 检查元素是否存在
+            const startBtn = document.getElementById('startSessionBtn');
+            const endBtn = document.getElementById('endSessionBtn');
+            const sendBtn = document.getElementById('sendBtn');
+            const messageInput = document.getElementById('messageInput');
+            
+            if (!startBtn || !endBtn || !sendBtn || !messageInput) {
+                console.error('找不到必要的DOM元素');
+                return;
+            }
+            
+            console.log('所有元素已找到，事件监听器已绑定');
+        });
+    </script>
+</body>
+</html>

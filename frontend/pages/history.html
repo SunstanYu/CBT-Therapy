@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史记录 - CBT治疗助手</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 历史记录</h1>
+            <nav>
+                <a href="/">返回聊天</a>
+                <a href="/dashboard">医生后台</a>
+            </nav>
+        </header>
+
+        <div class="history-container">
+            <div class="user-selector">
+                <label>用户ID: </label>
+                <input type="number" id="userIdInput" value="1" min="1">
+                <button id="loadHistoryBtn" class="btn btn-primary">加载历史</button>
+            </div>
+
+            <div id="historyList" class="history-list">
+                <!-- 历史记录将在这里显示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        document.getElementById('loadHistoryBtn').addEventListener('click', async () => {
+            const userId = document.getElementById('userIdInput').value;
+            await loadHistory(userId);
+        });
+
+        async function loadHistory(userId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/analysis/user/${userId}/history`);
+                const data = await response.json();
+                
+                const historyList = document.getElementById('historyList');
+                historyList.innerHTML = '';
+                
+                if (data.success && data.history.length > 0) {
+                    data.history.forEach(item => {
+                        const recordDiv = document.createElement('div');
+                        recordDiv.className = 'history-item';
+                        recordDiv.innerHTML = `
+                            <h3>日期: ${item.date}</h3>
+                            <div class="analysis-preview">
+                                <p><strong>主要情绪:</strong> ${item.analysis.emotional_state.primary_emotion}</p>
+                                <p><strong>情绪强度:</strong> ${item.analysis.emotional_state.emotion_intensity_0_10}/10</p>
+                                <p><strong>焦虑:</strong> ${item.analysis.clinical_scores.anxiety_0_10}/10</p>
+                                <p><strong>抑郁:</strong> ${item.analysis.clinical_scores.depression_0_10}/10</p>
+                                <p><strong>压力:</strong> ${item.analysis.clinical_scores.stress_0_10}/10</p>
+                            </div>
+                            <details>
+                                <summary>查看完整分析</summary>
+                                <pre>${JSON.stringify(item.analysis, null, 2)}</pre>
+                            </details>
+                        `;
+                        historyList.appendChild(recordDiv);
+                    });
+                } else {
+                    historyList.innerHTML = '<p>暂无历史记录</p>';
+                }
+            } catch (error) {
+                console.error('加载历史失败:', error);
+                alert('加载历史记录失败');
+            }
+        }
+    </script>
+</body>
+</html>
+

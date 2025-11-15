@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Therapy Assistant - In Conversation</title>
+    <link rel="stylesheet" href="/static/styles/main.css?v=2.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="therapeutic-background">
+        <!-- Soft background illustration elements -->
+        <div class="bg-decoration">
+            <div class="cloud cloud-1"></div>
+            <div class="cloud cloud-2"></div>
+            <div class="mountain"></div>
+            <div class="wave wave-1"></div>
+            <div class="wave wave-2"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="therapeutic-header">
+            <a href="/" class="back-home-btn" title="Back to Home">← Back</a>
+            <h1>🌿 CBT Therapy Assistant</h1>
+            <p class="subtitle">Today, let's take care of your feelings together</p>
+        </header>
+
+        <div class="chat-container">
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will be dynamically added here -->
+                <div class="welcome-message">
+                    <div class="welcome-icon">🌱</div>
+                    <p>This is your safe space. You can take your time, and we'll listen slowly.</p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <div class="input-row">
+                        <textarea 
+                            id="messageInput" 
+                            placeholder="This is your space… You can write anything you want to say. Take your time, no rush." 
+                            rows="3"
+                            disabled
+                        ></textarea>
+                        <button id="voiceInputBtn" type="button" class="btn-voice" title="Voice Input" disabled>
+                            <span class="voice-icon">🎤</span>
+                        </button>
+                    </div>
+                    <button id="sendBtn" type="button" class="btn btn-send" disabled>
+                        <span class="btn-icon">🌿</span>
+                        <span class="btn-text">Share with your therapist</span>
+                    </button>
+                </div>
+                <div id="voiceStatus" class="voice-status" style="display: none;">
+                    <span class="voice-status-icon">🔴</span>
+                    <span class="voice-status-text">Recording...</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="therapeutic-footer">
+            <p>💛 Every word you say here will be listened to carefully. This is your safe space.</p>
+        </footer>
+    </div>
+
+    <script src="/static/components/config.js"></script>
+    <script src="/static/components/chat_window.js"></script>
+    <script>
+        // Voice input button functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const messageInput = document.getElementById('messageInput');
+            let isRecording = false;
+            let mediaRecorder = null;
+            let audioChunks = [];
+
+            // Check if browser supports MediaRecorder
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.warn('Browser does not support audio recording');
+                if (voiceBtn) {
+                    voiceBtn.disabled = true;
+                    voiceBtn.title = 'Voice input not supported in this browser';
+                }
+            }
+
+            async function startRecording() {
+                try {
+                    // Request microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 48000
+                        } 
+                    });
+
+                    // Create MediaRecorder with WebM Opus format (supported by Google Speech-to-Text)
+                    // Try different MIME types for browser compatibility
+                    let mimeType = 'audio/webm;codecs=opus';
+                    if (!MediaRecorder.isTypeSupported(mimeType)) {
+                        mimeType = 'audio/webm';
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            mimeType = 'audio/ogg;codecs=opus';
+                            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                                mimeType = ''; // Use browser default
+                            }
+                        }
+                    }
+                    
+                    const options = mimeType ? { mimeType: mimeType } : {};
+                    mediaRecorder = new MediaRecorder(stream, options);
+
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+
+                        // Create audio blob with detected MIME type
+                        const blobType = mediaRecorder.mimeType || 'audio/webm';
+                        const audioBlob = new Blob(audioChunks, { type: blobType });
+                        
+                        // Send to backend for transcription
+                        await transcribeAudio(audioBlob, blobType);
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    voiceBtn.classList.add('recording');
+                    voiceStatus.style.display = 'flex';
+                    console.log('Voice recording started');
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    alert('Failed to access microphone. Please check your browser permissions.');
+                    isRecording = false;
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+                isRecording = false;
+                voiceBtn.classList.remove('recording');
+                voiceStatus.style.display = 'none';
+                console.log('Voice recording stopped');
+            }
+
+            async function transcribeAudio(audioBlob, mimeType = 'audio/webm') {
+                try {
+                    voiceStatus.querySelector('.voice-status-text').textContent = 'Processing...';
+                    
+                    // Determine file extension from MIME type
+                    let extension = 'webm';
+                    if (mimeType.includes('ogg')) {
+                        extension = 'ogg';
+                    } else if (mimeType.includes('mp4')) {
+                        extension = 'm4a';
+                    } else if (mimeType.includes('wav')) {
+                        extension = 'wav';
+                    }
+                    
+                    const formData = new FormData();
+                    formData.append('audio_file', audioBlob, `recording.${extension}`);
+
+                    const apiBase = window.API_BASE || 'http://localhost:8000';
+                    const response = await fetch(`${apiBase}/api/speech/transcribe`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success && data.transcript) {
+                        // Append transcript to input field
+                        const currentText = messageInput.value;
+                        const newText = currentText ? currentText + ' ' + data.transcript : data.transcript;
+                        messageInput.value = newText;
+                        
+                        // Focus on input
+                        messageInput.focus();
+                        
+                        // Show success message briefly
+                        voiceStatus.querySelector('.voice-status-text').textContent = 'Transcribed successfully!';
+                        setTimeout(() => {
+                            voiceStatus.style.display = 'none';
+                        }, 2000);
+                    } else {
+                        throw new Error(data.error || 'Transcription failed');
+                    }
+                } catch (error) {
+                    console.error('Transcription error:', error);
+                    voiceStatus.querySelector('.voice-status-text').textContent = 'Transcription failed';
+                    setTimeout(() => {
+                        voiceStatus.style.display = 'none';
+                    }, 3000);
+                    alert('Failed to transcribe audio: ' + error.message);
+                }
+            }
+
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', function() {
+                    if (!isRecording) {
+                        startRecording();
+                    } else {
+                        stopRecording();
+                    }
+                });
+            }
+        });
+
+        // Auto-start session when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Chat page loaded, auto-starting session');
+            
+            const userId = window.currentUserId || 1;
+            const apiBase = window.API_BASE || 'http://localhost:8000';
+            
+            try {
+                const response = await fetch(`${apiBase}/api/session/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: userId
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+                    throw new Error(errorData.detail || `HTTP error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Auto-start session successful:', data);
+                
+                if (data.success) {
+                    // Show welcome message
+                    const chatMessages = document.getElementById('chatMessages');
+                    const welcomeMessage = chatMessages.querySelector('.welcome-message');
+                    if (welcomeMessage) {
+                        welcomeMessage.remove();
+                    }
+                    
+                    // Add AI welcome message
+                    if (typeof addMessage === 'function') {
+                        addMessage(data.message, false);
+                    }
+                    
+                    // Enable input
+                    const messageInput = document.getElementById('messageInput');
+                    const sendBtn = document.getElementById('sendBtn');
+                    const voiceBtn = document.getElementById('voiceInputBtn');
+                    if (messageInput) {
+                        messageInput.disabled = false;
+                    }
+                    if (sendBtn) {
+                        sendBtn.disabled = false;
+                    }
+                    if (voiceBtn) {
+                        voiceBtn.disabled = false;
+                    }
+                }
+            } catch (error) {
+                console.error('Auto-start session failed:', error);
+                alert('Failed to start session. Please refresh the page and try again.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生后台 - CBT治疗助手</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👨‍⚕️ 医生后台</h1>
+            <nav>
+                <a href="/">用户界面</a>
+                <a href="/history">历史记录</a>
+            </nav>
+        </header>
+
+        <div class="dashboard-container">
+            <div class="user-selector">
+                <label>选择用户: </label>
+                <select id="userSelect">
+                    <option value="">加载中...</option>
+                </select>
+                <button id="loadUserBtn" class="btn btn-primary">加载用户信息</button>
+            </div>
+
+            <div id="userProfile" class="user-profile" style="display: none;">
+                <h2>用户档案</h2>
+                <div id="profileContent"></div>
+            </div>
+
+            <div id="userRecords" class="user-records" style="display: none;">
+                <h2>会话记录</h2>
+                <div id="recordsContent"></div>
+            </div>
+
+            <div id="therapistNotes" class="therapist-notes" style="display: none;">
+                <h2>治疗师备注</h2>
+                <textarea id="notesInput" rows="5" placeholder="输入治疗师备注..."></textarea>
+                <button id="saveNotesBtn" class="btn btn-primary">保存备注</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentUserId = null;
+
+        // 加载用户列表
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/doctor/users`);
+                const data = await response.json();
+                
+                const select = document.getElementById('userSelect');
+                select.innerHTML = '<option value="">请选择用户</option>';
+                
+                data.users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.textContent = `${user.username} (ID: ${user.id})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+            }
+        }
+
+        // 加载用户信息
+        document.getElementById('loadUserBtn').addEventListener('click', async () => {
+            const userId = document.getElementById('userSelect').value;
+            if (!userId) {
+                alert('请先选择用户');
+                return;
+            }
+            currentUserId = userId;
+            await loadUserProfile(userId);
+            await loadUserRecords(userId);
+        });
+
+        async function loadUserProfile(userId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/doctor/user/${userId}/profile`);
+                const data = await response.json();
+                
+                const profileContent = document.getElementById('profileContent');
+                const profileDiv = document.getElementById('userProfile');
+                
+                if (data.profile) {
+                    const profile = data.profile;
+                    profileContent.innerHTML = `
+                        <div class="profile-section">
+                            <h3>趋势数据</h3>
+                            <p><strong>焦虑趋势:</strong> ${JSON.stringify(profile.anxiety_trend || [])}</p>
+                            <p><strong>抑郁趋势:</strong> ${JSON.stringify(profile.depression_trend || [])}</p>
+                            <p><strong>压力趋势:</strong> ${JSON.stringify(profile.stress_trend || [])}</p>
+                        </div>
+                        <div class="profile-section">
+                            <h3>常见认知扭曲</h3>
+                            <ul>
+                                ${(profile.common_distortions || []).map(d => `<li>${d}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="profile-section">
+                            <h3>行为模式</h3>
+                            <ul>
+                                ${(profile.behavior_patterns || []).map(b => `<li>${b}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    
+                    if (profile.therapist_notes) {
+                        document.getElementById('notesInput').value = profile.therapist_notes;
+                    }
+                    
+                    profileDiv.style.display = 'block';
+                    document.getElementById('therapistNotes').style.display = 'block';
+                } else {
+                    profileContent.innerHTML = '<p>该用户暂无档案数据</p>';
+                    profileDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('加载用户档案失败:', error);
+            }
+        }
+
+        async function loadUserRecords(userId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/doctor/user/${userId}/records?limit=10`);
+                const data = await response.json();
+                
+                const recordsContent = document.getElementById('recordsContent');
+                const recordsDiv = document.getElementById('userRecords');
+                
+                if (data.records && data.records.length > 0) {
+                    recordsContent.innerHTML = data.records.map(record => `
+                        <div class="record-item">
+                            <h4>日期: ${record.date}</h4>
+                            <details>
+                                <summary>查看分析结果</summary>
+                                <pre>${JSON.stringify(record.analysis_json, null, 2)}</pre>
+                            </details>
+                            <details>
+                                <summary>查看对话记录</summary>
+                                <pre>${record.conversation_transcript || '无'}</pre>
+                            </details>
+                        </div>
+                    `).join('');
+                } else {
+                    recordsContent.innerHTML = '<p>暂无会话记录</p>';
+                }
+                
+                recordsDiv.style.display = 'block';
+            } catch (error) {
+                console.error('加载会话记录失败:', error);
+            }
+        }
+
+        // 保存治疗师备注
+        document.getElementById('saveNotesBtn').addEventListener('click', async () => {
+            if (!currentUserId) {
+                alert('请先选择用户');
+                return;
+            }
+            
+            const notes = document.getElementById('notesInput').value;
+            
+            try {
+                const response = await fetch(
+                    `${API_BASE}/api/doctor/user/${currentUserId}/profile/notes`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ notes: notes })
+                    }
+                );
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('备注已保存');
+                }
+            } catch (error) {
+                console.error('保存备注失败:', error);
+                alert('保存备注失败');
+            }
+        });
+
+        // 页面加载时初始化
+        window.addEventListener('load', loadUsers);
+    </script>
+</body>
+</html>
+

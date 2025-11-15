@@ -1,0 +1,787 @@
+/* CBT Therapy Assistant - 治疗性 UI 样式 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Calm-Tech 心理健康界面配色 */
+    --primary-blue: #7BAFDC;
+    --soft-blue: #AEC6CF;
+    --warm-cream: #F4E7D3;
+    --ivory-white: #FFFAF4;
+    --warm-beige: #FAF3E0;
+    
+    /* 情绪提示色（柔和版） */
+    --success: #71C6A5;
+    --info: #6DA9E4;
+    --error: #E27D7A;
+    --risk: #EFB18F;
+    
+    /* 文字颜色 */
+    --text-dark: #444;
+    --text-medium: #666;
+    --text-light: #888;
+    
+    /* 柔和字体 */
+    --font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-family);
+    font-weight: 400;
+    background: linear-gradient(180deg, #E7F2FA 0%, #FAF3E0 100%);
+    height: 100vh;
+    padding: 10px;
+    position: relative;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 柔和背景插画 */
+.therapeutic-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bg-decoration {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    opacity: 0.4;
+}
+
+.cloud:before,
+.cloud:after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+}
+
+.cloud-1 {
+    width: 100px;
+    height: 40px;
+    top: 10%;
+    left: 10%;
+    animation: float 20s infinite ease-in-out;
+}
+
+.cloud-1:before {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 10px;
+}
+
+.cloud-1:after {
+    width: 60px;
+    height: 40px;
+    top: -15px;
+    right: 10px;
+}
+
+.cloud-2 {
+    width: 80px;
+    height: 30px;
+    top: 20%;
+    right: 15%;
+    animation: float 25s infinite ease-in-out reverse;
+}
+
+.cloud-2:before {
+    width: 40px;
+    height: 40px;
+    top: -20px;
+    left: 5px;
+}
+
+.cloud-2:after {
+    width: 50px;
+    height: 30px;
+    top: -10px;
+    right: 5px;
+}
+
+.mountain {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(to top, rgba(174, 198, 207, 0.2) 0%, transparent 100%);
+    clip-path: polygon(0 100%, 20% 60%, 40% 80%, 60% 50%, 80% 70%, 100% 40%, 100% 100%);
+}
+
+.wave {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px;
+    background: rgba(123, 175, 220, 0.1);
+    border-radius: 50% 50% 0 0;
+}
+
+.wave-1 {
+    animation: wave 15s infinite ease-in-out;
+}
+
+.wave-2 {
+    bottom: -20px;
+    background: rgba(174, 198, 207, 0.08);
+    animation: wave 20s infinite ease-in-out reverse;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-20px) translateX(20px); }
+}
+
+@keyframes wave {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-50px); }
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    background: var(--ivory-white);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部区域 */
+.therapeutic-header {
+    background: linear-gradient(135deg, rgba(123, 175, 220, 0.15) 0%, rgba(174, 198, 207, 0.1) 100%);
+    padding: 20px 30px;
+    text-align: center;
+    border-bottom: 1px solid rgba(123, 175, 220, 0.1);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.back-home-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-medium);
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 300;
+    padding: 6px 12px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.back-home-btn:hover {
+    opacity: 1;
+    background: rgba(123, 175, 220, 0.1);
+    color: var(--primary-blue);
+}
+
+.therapeutic-header h1 {
+    font-size: 1.8em;
+    font-weight: 400;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.subtitle {
+    font-size: 0.95em;
+    color: var(--text-medium);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/* 聊天容器 */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 15px 20px;
+    background: var(--warm-beige);
+    overflow: hidden;
+    min-height: 0;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 15px 15px;
+    margin-bottom: 15px;
+    min-height: 0;
+}
+
+/* 欢迎消息 */
+.welcome-message {
+    text-align: center;
+    padding: 20px 15px;
+    color: var(--text-medium);
+}
+
+.welcome-icon {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+.welcome-message p {
+    font-size: 1em;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+/* 消息样式 */
+.message {
+    margin-bottom: 16px;
+    padding: 14px 18px;
+    border-radius: 20px;
+    max-width: 75%;
+    word-wrap: break-word;
+    line-height: 1.6;
+    font-size: 0.95em;
+    letter-spacing: 0.3px;
+    animation: messageFadeIn 0.4s ease-out;
+    position: relative;
+}
+
+@keyframes messageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.user-message {
+    background: #FFF8F0;
+    color: var(--text-dark);
+    margin-left: auto;
+    text-align: left;
+    border: 1px solid rgba(244, 231, 211, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.user-message::before {
+    content: '🤍';
+    margin-right: 8px;
+    opacity: 0.6;
+}
+
+.assistant-message {
+    background: #E7F2FA;
+    color: var(--text-dark);
+    margin-right: auto;
+    border: 1px solid rgba(123, 175, 220, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.assistant-message::before {
+    content: '🌱';
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+/* 会话控制 */
+.session-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(123, 175, 220, 0.1);
+    flex-shrink: 0;
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    background: rgba(174, 198, 207, 0.3);
+    color: var(--text-medium);
+    border-radius: 16px;
+    font-size: 0.85em;
+    font-weight: 300;
+    margin-left: auto;
+}
+
+.status-indicator.active {
+    background: rgba(113, 198, 165, 0.3);
+    color: var(--success);
+}
+
+/* 输入区域 */
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid rgba(174, 198, 207, 0.3);
+    border-radius: 20px;
+    font-size: 0.95em;
+    font-family: var(--font-family);
+    font-weight: 300;
+    resize: none;
+    background: #FDF8F2;
+    color: var(--text-dark);
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+    max-height: 100px;
+}
+
+/* 语音输入按钮 */
+.btn-voice {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border: 2px solid rgba(174, 198, 207, 0.3);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.btn-voice:hover {
+    background: rgba(123, 175, 220, 0.1);
+    border-color: var(--primary-blue);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(123, 175, 220, 0.2);
+}
+
+.btn-voice:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.btn-voice:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-voice:disabled:hover {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(174, 198, 207, 0.3);
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.btn-voice.recording {
+    background: rgba(226, 125, 122, 0.15);
+    border-color: var(--error);
+    animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
+.btn-voice.recording .voice-icon {
+    animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+.voice-icon {
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+
+.btn-voice:hover .voice-icon {
+    transform: scale(1.1);
+}
+
+@keyframes pulse-recording {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(226, 125, 122, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 16px rgba(226, 125, 122, 0.5);
+    }
+}
+
+@keyframes pulse-icon {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* 语音状态提示 */
+.voice-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(226, 125, 122, 0.1);
+    border-radius: 16px;
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: var(--error);
+    animation: fadeIn 0.3s ease;
+}
+
+.voice-status-icon {
+    font-size: 12px;
+    animation: blink 1s ease-in-out infinite;
+}
+
+.voice-status-text {
+    font-weight: 300;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#messageInput::placeholder {
+    color: var(--text-light);
+    font-weight: 300;
+}
+
+#messageInput:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    background: #FFF8F0;
+    box-shadow: 0 4px 16px rgba(123, 175, 220, 0.15);
+}
+
+#messageInput:disabled {
+    background: rgba(250, 243, 224, 0.5);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.95em;
+    font-family: var(--font-family);
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-therapeutic {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(123, 175, 220, 0.3);
+}
+
+.btn-therapeutic:hover:not(:disabled) {
+    background: #6DA9E4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(123, 175, 220, 0.4);
+}
+
+.btn-secondary-therapeutic {
+    background: rgba(174, 198, 207, 0.3);
+    color: var(--text-dark);
+    border: 1px solid rgba(174, 198, 207, 0.5);
+}
+
+.btn-secondary-therapeutic:hover:not(:disabled) {
+    background: rgba(174, 198, 207, 0.4);
+}
+
+.btn-send {
+    background: #8DC6E8;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(141, 198, 232, 0.3);
+    font-size: 1em;
+}
+
+.btn-send:hover:not(:disabled) {
+    background: #7BAFDC;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(141, 198, 232, 0.4);
+}
+
+.btn-icon {
+    font-size: 1.2em;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* 页脚 */
+.therapeutic-footer {
+    padding: 10px 20px;
+    text-align: center;
+    background: rgba(255, 250, 244, 0.8);
+    border-top: 1px solid rgba(123, 175, 220, 0.1);
+    color: var(--text-medium);
+    font-size: 0.85em;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    flex-shrink: 0;
+}
+
+/* 分析结果 */
+.analysis-result {
+    margin: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    border-left: 4px solid var(--primary-blue);
+    display: none;
+}
+
+.analysis-result h3 {
+    margin-bottom: 15px;
+    color: var(--primary-blue);
+    font-weight: 400;
+}
+
+.analysis-result pre {
+    background: var(--warm-beige);
+    padding: 15px;
+    border-radius: 12px;
+    overflow-x: auto;
+    font-size: 0.9em;
+    line-height: 1.8;
+    font-weight: 300;
+}
+
+/* 历史记录页面 */
+.history-container,
+.dashboard-container {
+    padding: 30px;
+    background: var(--warm-beige);
+}
+
+.user-selector {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-selector input,
+.user-selector select {
+    padding: 12px 16px;
+    border: 2px solid rgba(174, 198, 207, 0.3);
+    border-radius: 16px;
+    font-size: 1em;
+    font-family: var(--font-family);
+    background: white;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.history-item {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    border-left: 4px solid var(--primary-blue);
+}
+
+.analysis-preview {
+    margin: 15px 0;
+}
+
+.analysis-preview p {
+    margin: 8px 0;
+    color: var(--text-medium);
+}
+
+/* 医生后台 */
+.user-profile,
+.user-records,
+.therapist-notes {
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+}
+
+.profile-section {
+    margin: 20px 0;
+    padding: 15px;
+    background: var(--warm-beige);
+    border-radius: 12px;
+}
+
+.profile-section h3 {
+    margin-bottom: 10px;
+    color: var(--primary-blue);
+    font-weight: 400;
+}
+
+.profile-section ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.record-item {
+    margin: 15px 0;
+    padding: 15px;
+    background: var(--warm-beige);
+    border-radius: 12px;
+    border-left: 4px solid var(--success);
+}
+
+.record-item h4 {
+    margin-bottom: 10px;
+    color: var(--primary-blue);
+    font-weight: 400;
+}
+
+.record-item details {
+    margin: 10px 0;
+}
+
+.record-item pre {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+#notesInput {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(174, 198, 207, 0.3);
+    border-radius: 16px;
+    font-family: var(--font-family);
+    font-size: 1em;
+    margin-bottom: 15px;
+    background: white;
+}
+
+/* 滚动条样式 */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: rgba(174, 198, 207, 0.1);
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(123, 175, 220, 0.3);
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(123, 175, 220, 0.5);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px;
+        border-radius: 24px;
+    }
+    
+    .therapeutic-header h1 {
+        font-size: 1.8em;
+    }
+    
+    .message {
+        max-width: 85%;
+        padding: 16px 20px;
+    }
+    
+    .session-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .status-indicator {
+        margin-left: 0;
+        text-align: center;
+    }
+    
+    .btn-send {
+        width: 100%;
+    }
+}

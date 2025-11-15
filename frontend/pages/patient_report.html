@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="patient-report-page">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient CBT Assessment Report - Doctor Dashboard</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+    <link rel="stylesheet" href="/static/styles/patient_report.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="patient-report-page">
+    <div class="container">
+        <header class="report-header">
+            <h1>Patient Daily CBT Report</h1>
+            <div class="header-controls">
+                <select id="userSelect" class="user-select">
+                    <option value="1">User 1</option>
+                </select>
+                <input type="date" id="dateSelect" class="date-select">
+                <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+                <button id="autoRefreshBtn" class="btn btn-secondary">Auto Refresh: Off</button>
+            </div>
+        </header>
+
+        <div id="reportDate" class="report-date"></div>
+
+        <!-- A. Risk Assessment -->
+        <section id="riskSection" class="card risk-card">
+            <h2>⚠️ RISK ASSESSMENT</h2>
+            <div id="riskContent"></div>
+        </section>
+
+        <!-- B. Clinical Scores (Radar Chart) -->
+        <section class="card">
+            <h2>📊 Clinical Symptom Scores</h2>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+            <div id="scoreBars" class="score-bars"></div>
+        </section>
+
+        <!-- C. Cognitive Distortions -->
+        <section class="card">
+            <h2>🧩 Cognitive Distortions</h2>
+            <div id="distortionsContent" class="distortions-container"></div>
+        </section>
+
+        <!-- D. Presenting Problem & Situation -->
+        <section class="card">
+            <h2>📝 Presenting Problem & Situation Summary</h2>
+            <div id="problemContent"></div>
+        </section>
+
+        <!-- E. Emotions & Physical Reactions -->
+        <section class="card">
+            <h2>❤️ Emotions & Physical Reactions</h2>
+            <div id="emotionsContent"></div>
+        </section>
+
+        <!-- F. Automatic Thoughts -->
+        <section class="card">
+            <h2>💭 Automatic Thoughts</h2>
+            <div id="thoughtsContent" class="thoughts-container"></div>
+        </section>
+
+        <!-- G. Behaviors & Consequences -->
+        <section class="card">
+            <h2>🔄 Behaviors & Consequences</h2>
+            <div id="behaviorsContent"></div>
+        </section>
+
+        <!-- H. Desired Change -->
+        <section class="card">
+            <h2>✨ Desired Change</h2>
+            <div id="desiredChangeContent"></div>
+        </section>
+
+        <!-- I. Profile Update -->
+        <section class="card">
+            <h2>📈 Profile Update</h2>
+            <div id="profileUpdateContent"></div>
+        </section>
+    </div>
+
+    <script src="/static/components/config.js"></script>
+    <script src="/static/components/patient_report.js"></script>
+</body>
+</html>
+
